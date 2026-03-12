@@ -1,0 +1,14 @@
+.info {
+  background: DarkGray;
+  color: #fff;
+}
+
+.alert {
+  background: DarkRed;
+  color: #8b2e2e;
+}
+
+.success {
+  background: DarkGreen;
+  color: #883d3d;
+}
