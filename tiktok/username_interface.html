@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Username Profile Viewer</title>
+  <style>
+    :root {
+      --bg1: #fff3e2;
+      --bg2: #e6f7ff;
+      --panel: #fffefa;
+      --ink: #1e293b;
+      --muted: #4b5563;
+      --line: #d9e2ec;
+      --brand: #e85d04;
+      --brand2: #0081a7;
+      --ok: #0f766e;
+      --danger: #be123c;
+      --radius: 16px;
+      --shadow: 0 14px 34px rgba(14, 30, 37, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(232, 93, 4, 0.18), transparent 36%),
+        radial-gradient(circle at 95% 20%, rgba(0, 129, 167, 0.18), transparent 40%),
+        linear-gradient(155deg, var(--bg1), var(--bg2));
+      padding: 24px;
+    }
+
+    .wrap {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+      animation: rise 380ms ease-out;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      background: linear-gradient(130deg, #fffdf8, #fff4ed);
+      border: 1px solid #ffffff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 74ch;
+      line-height: 1.45;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1fr;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid #ffffff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+    }
+
+    .controls {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 0.84rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .span-5 { grid-column: span 5; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-12 { grid-column: span 12; }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 11px;
+      background: #ffffff;
+      color: #0f172a;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 240px;
+      resize: vertical;
+      font-family: "Consolas", "Courier New", monospace;
+      line-height: 1.35;
+    }
+
+    .actions {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 100ms ease, filter 130ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    .primary { background: var(--brand); color: #fff; }
+    .secondary { background: var(--brand2); color: #fff; }
+    .ghost { background: #edf2f7; color: #334155; }
+
+    .status {
+      margin-top: 10px;
+      min-height: 1.5em;
+      font-weight: 700;
+      color: var(--danger);
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+
+    .stats {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      margin-bottom: 10px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: linear-gradient(175deg, #ffffff, #f8fbff);
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 4px;
+    }
+
+    .value {
+      font-size: 1.18rem;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .block {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .block h3 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      color: #1f2937;
+    }
+
+    .chip {
+      display: inline-block;
+      margin: 0 6px 6px 0;
+      border-radius: 999px;
+      border: 1px solid #bee3f8;
+      background: #ebf8ff;
+      color: #0c4a6e;
+      padding: 4px 9px;
+      font-size: 0.85rem;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .mono {
+      font-family: "Consolas", "Courier New", monospace;
+      word-break: break-all;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 6px 0 0;
+    }
+
+    @media (max-width: 820px) {
+      .span-5,
+      .span-4,
+      .span-3 {
+        grid-column: span 12;
+      }
+    }
+
+    @media (min-width: 980px) {
+      .grid {
+        grid-template-columns: 1.05fr 0.95fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>Username Profile Viewer</h1>
+      <p>
+        Enter a username to validate it and open the profile URL quickly.
+        Most recent followers cannot be fetched from this page unless you connect an approved data source/API.
+      </p>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Input</h2>
+        <div class="controls">
+          <div class="field span-5">
+            <label for="username">Username</label>
+            <input id="username" placeholder="livebyrules" />
+          </div>
+          <div class="field span-3">
+            <label for="platform">Platform</label>
+            <select id="platform">
+              <option value="tiktok">TikTok</option>
+              <option value="instagram">Instagram</option>
+              <option value="x">X</option>
+              <option value="github">GitHub</option>
+            </select>
+          </div>
+          <div class="field span-4">
+            <label for="openProfileBtn">Open Profile</label>
+            <button id="openProfileBtn" class="ghost" type="button">Open In Browser</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="analyzeBtn" class="primary">Check Username</button>
+          <button id="clearBtn" class="ghost">Clear</button>
+        </div>
+
+        <div id="status" class="status" aria-live="polite"></div>
+        <p class="small">To get most recent followers, connect a compliant API/data source and provide access tokens where required.</p>
+      </article>
+
+      <article class="panel">
+        <h2>Output</h2>
+        <div class="stats">
+          <div class="stat">
+            <div class="label">Username Valid</div>
+            <div class="value" id="outValid">-</div>
+          </div>
+          <div class="stat">
+            <div class="label">Data Source Connected</div>
+            <div class="value" id="outRows">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Follower Data Available</div>
+            <div class="value" id="outEmailCount">0</div>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3>Profile URL</h3>
+          <div id="outUrl" class="mono">-</div>
+        </div>
+
+        <div class="block">
+          <h3>Profile Details</h3>
+          <ul id="profileList">
+            <li>No profile details yet. Use Open In Browser for the public profile page.</li>
+          </ul>
+        </div>
+
+        <div class="block">
+          <h3>Notes</h3>
+          <div id="emailsWrap">No connected API. This tool only validates usernames and builds profile links.</div>
+        </div>
+
+        <div class="block">
+          <h3>Most Recent Followers</h3>
+          <ul id="followersList">
+            <li>Not available: most recent followers require a supported API/data source.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const USERNAME_PATTERN = /^[A-Za-z0-9._]{2,24}$/;
+    const URLS = {
+      tiktok: "https://www.tiktok.com/@{username}",
+      instagram: "https://www.instagram.com/{username}",
+      x: "https://x.com/{username}",
+      github: "https://github.com/{username}"
+    };
+
+    const usernameEl = document.getElementById("username");
+    const platformEl = document.getElementById("platform");
+    const statusEl = document.getElementById("status");
+
+    const outValidEl = document.getElementById("outValid");
+    const outRowsEl = document.getElementById("outRows");
+    const outEmailCountEl = document.getElementById("outEmailCount");
+    const outUrlEl = document.getElementById("outUrl");
+    const profileListEl = document.getElementById("profileList");
+    const emailsWrapEl = document.getElementById("emailsWrap");
+    const followersListEl = document.getElementById("followersList");
+
+    function setStatus(message, ok = false) {
+      statusEl.textContent = message;
+      statusEl.classList.toggle("ok", ok);
+    }
+
+    function buildUrl(username, platform) {
+      return URLS[platform].replace("{username}", username);
+    }
+
+    function runAnalysis() {
+      const username = usernameEl.value.trim();
+      const platform = platformEl.value;
+
+      if (!username) {
+        setStatus("Enter a username first.");
+        return;
+      }
+
+      const valid = USERNAME_PATTERN.test(username);
+      outValidEl.textContent = valid ? "yes" : "no";
+      outUrlEl.textContent = buildUrl(username, platform);
+      outRowsEl.textContent = "no";
+      outEmailCountEl.textContent = "no";
+      profileListEl.innerHTML = "";
+
+      [
+        `Username: ${username}`,
+        `Platform: ${platform}`,
+        "Follower details: unavailable without approved API/data source",
+        "Public profile data: open the profile URL in browser",
+      ].forEach((line) => {
+        const li = document.createElement("li");
+        li.textContent = line;
+        profileListEl.appendChild(li);
+      });
+
+      emailsWrapEl.textContent = "No connected API. Email and follower extraction is disabled in this mode.";
+      followersListEl.innerHTML = "<li>Not available without a connected API/data source.</li>";
+      setStatus("Username checked. Open the profile URL for public info.", true);
+    }
+
+    function clearAll() {
+      usernameEl.value = "";
+      outValidEl.textContent = "-";
+      outRowsEl.textContent = "0";
+      outEmailCountEl.textContent = "0";
+      outUrlEl.textContent = "-";
+      profileListEl.innerHTML = "<li>No profile details yet. Use Open In Browser for the public profile page.</li>";
+      emailsWrapEl.textContent = "No connected API. This tool only validates usernames and builds profile links.";
+      followersListEl.innerHTML = "<li>Not available: most recent followers require a supported API/data source.</li>";
+      setStatus("");
+    }
+
+    document.getElementById("openProfileBtn").addEventListener("click", () => {
+      const username = usernameEl.value.trim();
+      if (!username) {
+        setStatus("Enter a username first.");
+        return;
+      }
+      const url = buildUrl(username, platformEl.value);
+      outUrlEl.textContent = url;
+      window.open(url, "_blank", "noopener,noreferrer");
+      setStatus("Opened profile URL in a new tab.", true);
+    });
+
+    document.getElementById("analyzeBtn").addEventListener("click", runAnalysis);
+    document.getElementById("clearBtn").addEventListener("click", clearAll);
+  </script>
+</body>
+</html>
